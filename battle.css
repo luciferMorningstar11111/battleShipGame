@@ -1,0 +1,29 @@
+* {
+    background-color: red;
+  }
+  h1 {
+    text-align: center;
+    text-decoration: underline;
+  }
+  table {
+    height: 415px;
+    width: 415px;
+    margin: auto;
+    border-collapse: collapse;
+  }
+  td {
+    border: 3px solid white;
+    width: 100px;
+    height: 100px;
+  }
+  input[type="reset"] {
+    width: 40px;
+    height: 30px;
+    margin: auto;
+    display: block;
+  }
+  
+  #instructions{
+    height: 30px;
+    border: black 1px solid;
+  }
