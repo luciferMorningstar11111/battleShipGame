@@ -1,100 +1,103 @@
-// let allRows=document.getElementsByClassName("row");
-// for(let i=0;i<allRows.length;i++){
-//     // let rowChildren=allRows[i].childNodes;
-//     for(let j=0;j<=3;j++){
-//         console.log(allRows[i][j])
-//     }
-// }
-// pop up of battleShip
-const allBattleShip = document.querySelectorAll(".box");
+function getRandomDigit(exclude) {
+    let digit;
+    do {
+        digit = Math.floor(Math.random() * 16); // 16 because we want digits from 0 to 15
+    } while (exclude.includes(digit));
+    return digit;
+}
+
+function getRandomFourAndRemaining() {
+    let randomFour = [];
+    let allDigits = Array.from({ length: 16 }, (_, i) => i); // Create an array [0, 1, ..., 15]
+
+    // Get 4 random non-repeating digits
+    for (let i = 0; i < 4; i++) {
+        const newDigit = getRandomDigit(randomFour);
+        randomFour.push(newDigit);
+    }
+
+    let remaining = allDigits.filter(digit => !randomFour.includes(digit));
+
+
+    const allDivs = document.querySelectorAll("td");
+    const allImages = document.querySelectorAll(".images");
+
+    // Clear previous classes and images
+    allDivs.forEach(div => {
+        div.classList.remove("battleship", "wrong", "clicked");
+        const img = div.querySelector("img");
+        if (img) {
+            img.src = "";
+        }
+    });
+
+    // Place battleship images
+    randomFour.forEach(index => {
+        allDivs[index].classList.add("battleship");
+        allImages[index].src = "https://t4.ftcdn.net/jpg/03/28/89/59/240_F_328895911_E2Jkmv8lT1IoHNyHrHE1GczzSXb3kXnp.jpg";
+    });
+
+    // Place wrong images
+    remaining.forEach(index => {
+        allDivs[index].classList.add("wrong");
+        allImages[index].src = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRz76IF3bFNkMquzA0Pv4FN5c-WCzgbg-7AhdQxun8&s";
+    });
+}
+
+function clearDivs() {
+    winPopUp.textContent = "";
+    losePopUp.textContent = "";
+    rightClick = 0;
+    wrongClick = 0;
+
+    const allDivs = document.querySelectorAll("td");
+    const allImgs = document.querySelectorAll(".images");
+
+    allDivs.forEach((div, index) => {
+        div.innerHTML = '<img class="images">';
+        div.classList.remove("battleship", "wrong", "clicked");
+    });
+
+    // Ensure the images are re-selected after being replaced
+    getRandomFourAndRemaining();
+}
+
 let rightClick = 0;
-let click = true;
-let isClicked = true;
-function appendBattleshipImg() {
-    for (let battleShip of allBattleShip) {
-        battleShip.onclick = () => {
-            rightClick = rightClick + 1;
-            if (rightClick === 4) {
-                alert("win");
-                clearDivs();
-            }
-            if (isClicked == true) {
-                isClicked = false;
-                let battleShipImg = document.createElement("img");
-                battleShipImg.src =
-                    "https://t4.ftcdn.net/jpg/03/28/89/59/240_F_328895911_E2Jkmv8lT1IoHNyHrHE1GczzSXb3kXnp.jpg";
-                battleShipImg.style.width = "100px";
-                battleShipImg.style.height = "100px";
-                battleShip.appendChild(battleShipImg);
-            }
-        };
-    }
-}
-
-appendBattleshipImg();
-
-//wrong classes
-const allWrongClasses = document.querySelectorAll(".wrong");
 let wrongClick = 0;
-
-function appendWrongImg() {
-    for (const wrongDiv of allWrongClasses) {
-        wrongDiv.onclick = () => {
-            // creating image of wrong image
-            let wrongImage = document.createElement("img");
-            wrongImage.src =
-                "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRz76IF3bFNkMquzA0Pv4FN5c-WCzgbg-7AhdQxun8&s";
-            wrongImage.style.width = "100px";
-            wrongImage.style.height = "100px";
-            wrongDiv.appendChild(wrongImage);
-            //lose alert
-
-
-            wrongClick = wrongClick + 1;
-            if (wrongClick === 5) {
-                alert("lose");
-                clearDivs();
-            }
-        };
-    }
-}
-appendWrongImg();
-//disable button
-
-const wrongDiv = document.getElementsByClassName("wrong");
-for (let wrong of wrongDiv) {
-    wrong.addEventListener("click", disable);
-}
-function disable() {
-    document.getElementsByClassName("wrong").disabled = true;
-}
-
-// resetButton
+const winPopUp = document.getElementById("winPopUp");
+const losePopUp = document.getElementById("losePopUp");
 const allTd = document.querySelectorAll("td");
+
+allTd.forEach(td => {
+    td.addEventListener("click", () => {
+        // Prevent multiple clicks on the same cell
+        if (td.classList.contains("clicked")) return;
+
+        td.classList.add("clicked");
+
+        const img = td.children[0];
+        img.style.display = "block";
+
+        if (td.classList.contains("battleship")) {
+            rightClick++;
+        } else {
+            wrongClick++;
+        }
+
+        if (rightClick === 4) {
+            winPopUp.textContent = "WIN";
+            setTimeout(clearDivs, 3000);
+        }
+
+        if (wrongClick === 5) {
+            losePopUp.textContent = "LOSE";
+            setTimeout(clearDivs, 3000);
+        }
+    });
+});
+
 const resetButton = document.querySelector("#resetButton");
 resetButton.addEventListener("click", clearDivs);
 
-function clearDivs() {
-    for (let td of allTd) {
-        td.innerHTML = "";
-    }
-}
-
-//INSTRUCTIONS
-const instructions = document.getElementById("instructions");
-instructions.addEventListener("click", alertInstruction);
-
-function alertInstruction() {
-    alert(
-        "INSTRUCTIONS:\nfind four battleships and you win\npredicting five wrong boxes and you lose"
-    );
-}
-
-// multiple click
-// for (let td of allTd) {
-//   td.addEventListener("click", disable);
-// }
-
-// function disable() {
-//   allTd.attr.disabled = true;
-// }
+// Initialize the game board for the first time
+getRandomFourAndRemaining();
