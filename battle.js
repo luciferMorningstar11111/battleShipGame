@@ -1,3 +1,12 @@
+let closeResultIcon=document.getElementById("closeResultIcon");
+closeResultIcon.addEventListener("click",()=>{
+    document.getElementById("gameResultDiv").style.display="none";
+});
+
+
+
+
+
 function getRandomDigit(exclude) {
     let digit;
     do {
@@ -45,10 +54,9 @@ function getRandomFourAndRemaining() {
 }
 
 function clearDivs() {
-    winPopUp.textContent = "";
-    losePopUp.textContent = "";
     rightClick = 0;
     wrongClick = 0;
+    allowClick();
 
     const allDivs = document.querySelectorAll("td");
     const allImgs = document.querySelectorAll(".images");
@@ -64,8 +72,7 @@ function clearDivs() {
 
 let rightClick = 0;
 let wrongClick = 0;
-const winPopUp = document.getElementById("winPopUp");
-const losePopUp = document.getElementById("losePopUp");
+const gameResult = document.getElementById("gameResult");
 const allTd = document.querySelectorAll("td");
 
 allTd.forEach(td => {
@@ -85,12 +92,29 @@ allTd.forEach(td => {
         }
 
         if (rightClick === 4) {
-            winPopUp.textContent = "WIN";
+            preventClick();
+            gameResult.textContent = "WIN";
+            setTimeout(()=>{
+                document.getElementById("gameResultDiv").style.display="flex";
+            },500);
+            setTimeout(()=>{
+                document.getElementById("gameResultDiv").style.display="none";
+                
+            },3000);
+            updateScore("win");
             setTimeout(clearDivs, 3000);
         }
 
         if (wrongClick === 5) {
-            losePopUp.textContent = "LOSE";
+            preventClick();
+            gameResult.textContent = "LOSE";
+            setTimeout(()=>{
+                document.getElementById("gameResultDiv").style.display="flex";
+            },500);
+            setTimeout(()=>{
+                document.getElementById("gameResultDiv").style.display="none";
+            },3000);
+            updateScore("lose");
             setTimeout(clearDivs, 3000);
         }
     });
@@ -101,3 +125,28 @@ resetButton.addEventListener("click", clearDivs);
 
 // Initialize the game board for the first time
 getRandomFourAndRemaining();
+
+const updateScore = (result) => {
+    let totalGames = parseInt(document.getElementById("totalGames").textContent);
+    totalGames += 1;
+    document.getElementById("totalGames").textContent = totalGames;
+    if(result==="win"){
+        document.getElementById("totalWins").textContent = parseInt(document.getElementById("totalWins").textContent)+1;
+    }
+    else{
+        document.getElementById("totalLoses").textContent = parseInt(document.getElementById("totalLoses").textContent)+1;
+    }
+
+}
+const preventClick = () => {
+    let allImagesDiv = document.querySelectorAll(".imagesDiv");
+    for(let i=0;i<allImagesDiv.length;i++){
+        allImagesDiv[i].style.pointerEvents="none";
+    }
+}
+const allowClick = () => {
+    let allImagesDiv = document.querySelectorAll(".imagesDiv");
+    for(let i=0;i<allImagesDiv.length;i++){
+        allImagesDiv[i].style.pointerEvents="auto";
+    }
+}
